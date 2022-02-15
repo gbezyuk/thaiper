@@ -11,8 +11,8 @@
           pressed: map[b] && pressedKey && map[b] === pressedKey || b === pressedKey,
         }"
       >
-        <span class="mapped-key" v-if="map[b]">{{ map[b] }}</span>
-        <span class="en-key">{{ b }}</span>
+        <span class="mapped-key" v-if="map[!shiftOn ? b : getShifted(b)]">{{ map[!shiftOn ? b : getShifted(b)] }}</span>
+        <span class="en-key">{{ !shiftOn ? b : getShifted(b) }}</span>
       </div>
     </div>
   </div>
@@ -32,6 +32,7 @@ export default defineComponent({
   data () {
     return {
       pressedKey: '',
+      shiftOn: false,
     }
   },
   computed: {
@@ -74,6 +75,16 @@ export default defineComponent({
     }
   },
   methods: {
+    onKeyDown (e: KeyboardEvent) {
+      if (e.key === 'Shift') {
+        this.shiftOn = true
+      }
+    },
+    onKeyUp (e: KeyboardEvent) {
+      if (e.key === 'Shift') {
+        this.shiftOn = false
+      }
+    },
     onKeyPress (e: KeyboardEvent) {
       if (Object.values(this.map).includes(e.key)) {
         this.pressedKey = e.key
@@ -86,12 +97,49 @@ export default defineComponent({
     resetPressedKey () {
       this.pressedKey = ''
     },
+    getShifted (b: string) {
+      if (b.match(/[a-z]/i)) {
+        return b.toUpperCase()
+      }
+
+      const l2u = {
+        "0": "!",
+        "1": "@",
+        "2": "#",
+        "3": "$",
+        "4": "%",
+        "5": "^",
+        "6": "&",
+        "7": "*",
+        "8": "(",
+        "9": ")",
+        "-": "_",
+        "=": "+",
+        "[": "{",
+        "]": "}",
+        "\\": "|",
+        ";": ":",
+        "'": "\"",
+        ",": "<",
+        ".": ">",
+        "/": "?"
+      }
+
+      if (b in l2u) {
+        return l2u[b]
+      }
+
+      return b
+    }
   },
   mounted () {
     window.addEventListener('keypress', this.onKeyPress)
+    window.addEventListener('keydown', this.onKeyDown)
+    window.addEventListener('keyup', this.onKeyUp)
   },
   beforeUnmount () {
     window.removeEventListener('keypress', this.onKeyPress)
+    window.addEventListener('keyup', this.onKeyUp)
   }
 })
 </script>

@@ -54,10 +54,11 @@ export default defineComponent({
 <style lang="stylus" scoped>
 .typing-task
   text-align center
-  font-size 3em
+  font-size 6em
   .letter
     &.subHighlighted
       background-color yellow
     &.highlighted
       background-color orange
+      color red
 </style>

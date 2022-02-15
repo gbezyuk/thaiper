@@ -1,45 +1,57 @@
 <template>
-  <div class="letter-details" :class="{
-    [dossier.type]: true,
-    [dossier.class]: true,
-  }">
+  <div
+    class="letter-details"
+    :class="{
+      [dossier.type]: true,
+      [dossier.class]: true,
+    }"
+  >
     <h1>{{ letter }}</h1>
-    <div class="trait name" v-if="dossier.name"><strong>{{ dossier.name }}</strong></div>
+    <div class="trait name" v-if="dossier.name">
+      <strong>{{ dossier.name }}</strong>
+    </div>
     <div class="trait transcriptions" v-if="dossier.transcriptions">
       transcriptions:
-      <span class="latin" v-if="dossier.transcriptions.latin">{{ dossier.transcriptions.latin }}</span>
-      <span class="cyrillic" v-if="dossier.transcriptions.cyrillic">{{ dossier.transcriptions.cyrillic }}</span>
+      <span class="latin" v-if="dossier.transcriptions.latin">{{
+        dossier.transcriptions.latin
+      }}</span>
+      <span class="cyrillic" v-if="dossier.transcriptions.cyrillic">{{
+        dossier.transcriptions.cyrillic
+      }}</span>
     </div>
-    <div class="trait class" v-if="dossier.class">class: <strong>{{ dossier.class }}</strong></div>
-    <div class="trait type" v-if="dossier.type">type: <strong>{{ dossier.type }}</strong></div>
-    <div class="trait frequency" v-if="dossier.frequency">frequency: <strong>{{ Math.round(dossier.frequency * 1000) / 10 }}%</strong></div>
-    <audio ref="audio" v-if="abugidaPosition" :src="`/audio-samples/abugida/${abugidaPosition}.mp3`" autoplay/>
+    <div class="trait class" v-if="dossier.class">
+      class: <strong>{{ dossier.class }}</strong>
+    </div>
+    <div class="trait type" v-if="dossier.type">
+      type: <strong>{{ dossier.type }}</strong>
+    </div>
+    <div class="trait frequency" v-if="dossier.frequency">
+      frequency: <strong>{{ Math.round(dossier.frequency * 1000) / 10 }}%</strong>
+    </div>
+    <audio ref="audio" :src="`/audio-samples/characters/${letter}.mp3`" autoplay/>
+    <div class="trait kedmanee" v-if="dossier.keyboard_locations?.kedmanee">
+      key: <strong>{{ dossier.keyboard_locations?.kedmanee }}</strong>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import wlf from '../../../../data/characters.json'
-import abugidaDetails from '../../../../data/abugidaDetails.json'
+import { defineComponent } from "vue";
+import wlf from "../../../../data/characters.json";
 
 export default defineComponent({
-  props: [
-    'letter',
-  ],
+  props: ["letter"],
   computed: {
-    dossier () {
-      return wlf.find(l => l.letter === this.letter)
+    dossier() {
+      return wlf.find((l) => l.letter === this.letter);
     },
-    abugidaPosition () {
-      const ap = abugidaDetails[this.letter].abugidaPosition
-      return ap == 4
-        ? 3
-        : ap > 5
-          ? ap - 2
-          : ap
-      }
-  }
-})
+  },
+  methods: {
+    play() {
+      this.$refs.audio.play();
+    },
+  },
+});
 </script>
 
 <style lang="stylus" scoped>
@@ -88,5 +100,4 @@ export default defineComponent({
       margin-right .5em
       font-weight bold
       font-size 1.5em
-
 </style>

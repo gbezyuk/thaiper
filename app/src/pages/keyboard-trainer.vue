@@ -1,7 +1,10 @@
 <template>
     <TypingTask :task="typingTask" :position="typingTaskPosition"/>
     <KeyboardLayout :map="kedmanee" :highlightedKey="typingTask[typingTaskPosition]" @keyPressed="onKeyPressed" ref="keyboardLayout"/>
-    <LetterDetails :letter="typingTask[typingTaskPosition]"/>
+    <LetterDetails :letter="typingTask[typingTaskPosition]" ref="letterDetails"/>
+    <div class="letters">
+        <span v-for="l in letters.map(l => l.letter)" :class="{ enabled: enabledLetters.map(l => l.letter).includes(l)}">{{ l }}</span>
+    </div>
 </template>
 
 <script language="ts">
@@ -35,7 +38,7 @@ export default defineComponent({
         // },
         enabledLetters () {
             // return this.letters.filter(l => this.taskLetters.includes(l.letter))
-            return this.letters.filter(l => l.type === "sonorant")
+            return this.letters //.filter(l => l.type === "sonorant")
         },
         kedmanee () {
             return this.enabledLetters.reduce(
@@ -61,6 +64,7 @@ export default defineComponent({
             const correct = this.typingTask[this.typingTaskPosition] === key
             // console.log(this.letters.find(l => l.letter === key), correct)
             if (correct) {
+                this.$refs.letterDetails.play()
                 this.typingTaskPosition++
                 while (this.typingTask[this.typingTaskPosition] === ' ' ||
                     this.typingTask[this.typingTaskPosition] === '\n'
@@ -94,4 +98,15 @@ export default defineComponent({
   position absolute
   right 1em
   top 1em
+
+.letters
+    font-size 3em
+    margin-top 3em
+    text-align center
+    > span
+        opacity 0.1
+        display inline-block
+        padding 0.2em
+        &.enabled
+            opacity 1.0
 </style>
