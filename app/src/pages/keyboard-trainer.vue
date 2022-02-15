@@ -7,14 +7,38 @@
     </div>
 </template>
 
-<script language="ts">
+<script>
 import wlf from '../../../data/characters.json'
+import words from '../../../data/most-frequent-4000-words.json'
 import { defineComponent } from 'vue'
 import KeyboardLayout from '../components/keyboard/KeyboardLayout.vue'
 import TypingTask from '../components/keyboard/TypingTask.vue'
 import LetterDetails from '../components/keyboard/LetterDetails.vue'
 
+/** TODO:
+ * graphs of letter frequency vs. word frequency
+ * reproduce letter frequency from the top 4000 words list (find word weights)
+ * letter details: autoplay as param; keyword translation; audio for non-consonant characters
+ * word panel with audio and translation; autoplay as param, too
+ * allow letter choice from the UX
+ * publish Thaiper as a separate project; language-specific databanks as sub-projects
+**/
+
 export default defineComponent({
+
+    // mounted () {
+    //     const n = 100
+    //     const ws = (words.slice(0, n).map(w => w.thai)).join('')
+    //     const letters = ws.split('').reduce(
+    //         (acc, wl) => {
+    //             acc.add(wl)
+    //             return acc
+    //         },
+    //         new Set()
+    //     )
+    //     console.log(n, letters.size, wlf.length)
+    // },
+
     components: {
         KeyboardLayout,
         TypingTask,
@@ -27,7 +51,12 @@ export default defineComponent({
     },
     computed: {
         typingTask () {
-            return this._createRandomTask(100)
+            const ws =  words.map(w => w.thai)
+                .filter(this.allLettersAllowed)
+                // .slice(0, 100)
+            console.log(ws.length)
+            return ws.join(' ')
+            // return this._createRandomTask(100)
         },
         letters () {
             return wlf //.filter(l => l.frequency >= 0.03)
@@ -38,7 +67,7 @@ export default defineComponent({
         // },
         enabledLetters () {
             // return this.letters.filter(l => this.taskLetters.includes(l.letter))
-            return this.letters //.filter(l => l.type === "sonorant")
+            return this.letters.slice(0, 7) //.filter(l => l.type === "sonorant")
         },
         kedmanee () {
             return this.enabledLetters.reduce(
@@ -60,6 +89,9 @@ export default defineComponent({
         }
     },
     methods: {
+        allLettersAllowed (word) {
+            return [...word].filter(l => this.enabledLetters.find(el => el.letter === l)).length === word.length
+        },
         onKeyPressed (key) {
             const correct = this.typingTask[this.typingTaskPosition] === key
             // console.log(this.letters.find(l => l.letter === key), correct)
