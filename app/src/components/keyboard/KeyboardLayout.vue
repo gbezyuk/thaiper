@@ -89,6 +89,9 @@ export default defineComponent({
       if (Object.values(this.map).includes(e.key)) {
         this.pressedKey = e.key
         this.$emit('keyPressed', this.pressedKey)
+      } if (Object.keys(this.map).includes(e.key)) {
+        this.pressedKey = this.map[e.key]
+        this.$emit('keyPressed', this.pressedKey)
       } else {
         this.pressedKey = e.key
         setTimeout(() => this.resetPressedKey(), 0)

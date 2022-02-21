@@ -6,7 +6,7 @@
       [dossier.class]: true,
     }"
   >
-    <h1>{{ letter }}</h1>
+    <h1 @click="play">{{ letter }}</h1>
     <div class="trait name" v-if="dossier.name">
       <strong>{{ dossier.name }}</strong>
     </div>
@@ -28,7 +28,7 @@
     <div class="trait frequency" v-if="dossier.frequency">
       frequency: <strong>{{ Math.round(dossier.frequency * 1000) / 10 }}%</strong>
     </div>
-    <audio ref="audio" :src="`/audio-samples/characters/${letter}.mp3`" autoplay/>
+    <audio v-if="withAudio" ref="audio" :src="`/audio-samples/characters/${letter}.mp3`" :autoplay="autoplay"/>
     <div class="trait kedmanee" v-if="dossier.keyboard_locations?.kedmanee">
       key: <strong>{{ dossier.keyboard_locations?.kedmanee }}</strong>
     </div>
@@ -40,7 +40,7 @@ import { defineComponent } from "vue";
 import wlf from "../../../../data/characters.json";
 
 export default defineComponent({
-  props: ["letter"],
+  props: ["letter", "withAudio", "autoplay"],
   computed: {
     dossier() {
       return wlf.find((l) => l.letter === this.letter);
@@ -83,6 +83,7 @@ export default defineComponent({
     color black
     min-width 1em
     text-align center
+    cursor pointer
 
   .trait
     padding .5em
